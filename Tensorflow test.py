@@ -1,4 +1,4 @@
-
+import tensorflow as tf
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
@@ -77,13 +77,13 @@ def test_handwritten_digit(custom_image_path):
     plt.axis('off')
     plt.show()
 
-test_handwritten_digit("D:/School/ECE 470/Project\Handwritten Numbers/0MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/Project\Handwritten Numbers/1MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/Project\Handwritten Numbers/2MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/Project\Handwritten Numbers/3MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/Project\Handwritten Numbers/4MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/Project\Handwritten Numbers/5MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/Project\Handwritten Numbers/6MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/Project\Handwritten Numbers/7MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/Project\Handwritten Numbers/8MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/Project\Handwritten Numbers/9MSPaint.png")
+test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/0MSPaint.png")
+test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/1MSPaint.png")
+test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/2MSPaint.png")
+test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/3MSPaint.png")
+test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/4MSPaint.png")
+test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/5MSPaint.png")
+test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/6MSPaint.png")
+test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/7MSPaint.png")
+test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/8MSPaint.png")
+test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/9MSPaint.png")
