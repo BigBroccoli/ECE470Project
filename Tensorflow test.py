@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 from keras.datasets import mnist
 from keras.models import Sequential
@@ -6,84 +7,97 @@ from keras.utils import to_categorical
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import datetime
 
-# Load MNIST dataset
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
-# Reshape and normalize images
-train_images = train_images.reshape((60000, 28, 28, 1)).astype('float32') / 255.0
-test_images = test_images.reshape((10000, 28, 28, 1)).astype('float32') / 255.0
+runs  = 25
 
-# One-hot encode labels
-train_labels = to_categorical(train_labels)
-test_labels = to_categorical(test_labels)
 
-# Build the model
-model = Sequential([
-    Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
-    MaxPooling2D((2, 2)),
-    Conv2D(64, (3, 3), activation='relu'),
-    MaxPooling2D((2, 2)),
-    Conv2D(128, (3, 3), activation='relu'),
-    Flatten(),
-    Dense(256, activation='relu'),
-    Dropout(0.5),
-    Dense(128, activation='relu'),
-    Dropout(0.5),
-    Dense(64, activation='relu'),
-    Dropout(0.5),
-    Dense(10, activation='softmax')
-])
+for i in range(runs):
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    output_folder = f"output_{current_time}"
+    os.makedirs(output_folder, exist_ok=True)
 
-# Compile the model
-model.compile(optimizer='adam',
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
+    # Load MNIST dataset
+    (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
-# Train the model
-model.fit(train_images, train_labels, epochs=50, batch_size=32, validation_data=(test_images, test_labels))
+    # Reshape and normalize images
+    train_images = train_images.reshape((60000, 28, 28, 1)).astype('float32') / 255.0
+    test_images = test_images.reshape((10000, 28, 28, 1)).astype('float32') / 255.0
 
-# Evaluate the model
-test_loss, test_acc = model.evaluate(test_images, test_labels)
-print(f"Test accuracy: {test_acc * 100:.2f}%")
+    # One-hot encode labels
+    train_labels = to_categorical(train_labels)
+    test_labels = to_categorical(test_labels)
 
-# Make predictions
-predictions = model.predict(test_images)
+    # Build the model
+    model = Sequential([
+        Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+        MaxPooling2D((2, 2)),
+        Conv2D(64, (3, 3), activation='relu'),
+        MaxPooling2D((2, 2)),
+        Conv2D(128, (3, 3), activation='relu'),
+        Flatten(),
+        Dense(256, activation='relu'),
+        Dropout(0.5),
+        Dense(128, activation='relu'),
+        Dropout(0.5),
+        Dense(64, activation='relu'),
+        Dropout(0.5),
+        Dense(10, activation='softmax')
+    ])
 
-def preprocess_image(image_path):
-    # Load the image of the handwritten digit
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    # Compile the model
+    model.compile(optimizer='adam',
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
 
-    if image is None:
-        print("Error: Could not read the image.")
-        return
+    # Train the model
+    model.fit(train_images, train_labels, epochs=25, batch_size=32, validation_data=(test_images, test_labels))
 
-    image = cv2.resize(image, (28, 28))
+    # Evaluate the model
+    test_loss, test_acc = model.evaluate(test_images, test_labels)
+    print(f"Test accuracy: {test_acc * 100:.2f}%")
 
-    image = image.astype('float32') / 255.0
+    # Make predictions
+    predictions = model.predict(test_images)
 
-    image = np.expand_dims(image, axis=(0, -1))
+    def preprocess_image(image_path):
+        # Load the image of the handwritten digit
+        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
-    return image
+        if image is None:
+            print("Error: Could not read the image.")
+            return
 
-def test_handwritten_digit(custom_image_path):
-    custom_image = preprocess_image(custom_image_path)
+        image = cv2.resize(image, (28, 28))
 
-    predicted_probabilities = model.predict(custom_image)
-    predicted_class = np.argmax(predicted_probabilities)
+        image = image.astype('float32') / 255.0
 
-    plt.imshow(cv2.imread(custom_image_path, cv2.IMREAD_GRAYSCALE), cmap='gray')
-    plt.title(f"Predicted Digit: {predicted_class}")
-    plt.axis('off')
-    plt.show()
+        image = np.expand_dims(image, axis=(0, -1))
 
-test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/0MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/1MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/2MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/3MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/4MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/5MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/6MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/7MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/8MSPaint.png")
-test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/9MSPaint.png")
+        return image
+
+    def test_handwritten_digit(custom_image_path):
+        custom_image = preprocess_image(custom_image_path)
+
+        predicted_probabilities = model.predict(custom_image)
+        predicted_class = np.argmax(predicted_probabilities)
+
+        plt.imshow(cv2.imread(custom_image_path, cv2.IMREAD_GRAYSCALE), cmap='gray')
+        plt.title(f"Predicted Digit: {predicted_class}")
+        plt.axis('off')
+
+        result_path = os.path.join(output_folder, os.path.basename(custom_image_path))
+        plt.savefig(result_path)
+        plt.show()
+
+    test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/0MSPaint.png")
+    test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/1MSPaint.png")
+    test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/2MSPaint.png")
+    test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/3MSPaint.png")
+    test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/4MSPaint.png")
+    test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/5MSPaint.png")
+    test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/6MSPaint.png")
+    test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/7MSPaint.png")
+    test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/8MSPaint.png")
+    test_handwritten_digit("D:/School/ECE 470/HW/ECE470Project/Handwritten Numbers/9MSPaint.png")
